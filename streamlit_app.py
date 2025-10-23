@@ -2,8 +2,8 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 
-from check_rain import check_rain
-from locate.google_api import geocode_and_rain
+# from check_rain import check_rain
+# from locate.google_api import geocode_and_rain
 from utils.zoom_viewr import show_zoomable_photo_like_map
 
 # Page config
@@ -75,52 +75,52 @@ if mode == 0:  # Home
 elif mode == 1:  # Address lookup
     st.header(PAGES[mode])
 
-    with st.form("form_addr"):
-        address = st.text_input("地址 / 地名", placeholder="例如: 台北101、安平古堡")
-        submitted = st.form_submit_button("查詢雨勢", type="primary")
+    # with st.form("form_addr"):
+    #     address = st.text_input("地址 / 地名", placeholder="例如: 台北101、安平古堡")
+    #     submitted = st.form_submit_button("查詢雨勢", type="primary")
 
-    if submitted:
-        with st.spinner("地理編碼中..."):
-            try:
-                name, lat, lon = geocode_and_rain(address)  # ← 你的函式，回傳 tuple
-            except ValueError as e:
-                st.warning("找不到此位置。換個關鍵詞試試？")
-                st.error(f"Geocoding 失敗：{e}")
-                name = lat = lon = None
+    # if submitted:
+    #     with st.spinner("地理編碼中..."):
+    #         try:
+    #             name, lat, lon = geocode_and_rain(address)  # ← 你的函式，回傳 tuple
+    #         except ValueError as e:
+    #             st.warning("找不到此位置。換個關鍵詞試試？")
+    #             st.error(f"Geocoding 失敗：{e}")
+    #             name = lat = lon = None
 
-        if name is not None:
-            st.success(name)  # show address name
+    #     if name is not None:
+    #         st.success(name)  # show address name
 
-            with st.spinner("查詢雨勢中..."):
-                try:
-                    result = check_rain(lat, lon, return_image=True)
-                except Exception as e:
-                    st.error(f"check_rain 失敗：{e}")
-                    result  = None
+    #         with st.spinner("查詢雨勢中..."):
+    #             try:
+    #                 result = check_rain(lat, lon, return_image=True)
+    #             except Exception as e:
+    #                 st.error(f"check_rain 失敗：{e}")
+    #                 result  = None
 
-            if result:
-                # 顯示主要資訊
-                col1, col2 = st.columns(2)
-                col1.metric("", result['desc'])
-                col2.metric(
-                    "mm/hr",
-                    f"{result['rng'][0]}–{result['rng'][1]}"
-                    if result['rng'][1] is not None
-                    else f"{result['rng'][0]}+"
-                )
+    #         if result:
+    #             # 顯示主要資訊
+    #             col1, col2 = st.columns(2)
+    #             col1.metric("", result['desc'])
+    #             col2.metric(
+    #                 "mm/hr",
+    #                 f"{result['rng'][0]}–{result['rng'][1]}"
+    #                 if result['rng'][1] is not None
+    #                 else f"{result['rng'][0]}+"
+    #             )
 
-                if result.get("image") is not None:
-                    show_zoomable_photo_like_map(
-                        result["image"],
-                        center_px=result["px"],
-                        center_py=result["py"],
-                        px_per_km=result["px_per_km"],
-                        init_km=25,
-                    )
+    #             if result.get("image") is not None:
+    #                 show_zoomable_photo_like_map(
+    #                     result["image"],
+    #                     center_px=result["px"],
+    #                     center_py=result["py"],
+    #                     px_per_km=result["px_per_km"],
+    #                     init_km=25,
+    #                 )
 
-                # 顯示地圖標點
-                df_map = pd.DataFrame({"lat": [result["lat"]], "lon": [result["lon"]]})
-                st.map(df_map, zoom=9)
+    #             # 顯示地圖標點
+    #             df_map = pd.DataFrame({"lat": [result["lat"]], "lon": [result["lon"]]})
+    #             st.map(df_map, zoom=9)
 
 
 elif mode == 2:  # Route lookup
