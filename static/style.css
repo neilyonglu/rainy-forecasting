@@ -1,0 +1,35 @@
+@media (max-width: 768px) {
+  .block-container {
+    padding-top: 0.5rem;
+    padding-bottom: 5rem;
+  }
+  label, .stMarkdown p {
+    font-size: 1.02rem;
+  }
+  .stTextInput input,
+  .stNumberInput input {
+    height: 2.6rem;
+    font-size: 1.02rem;
+  }
+  button[kind="primary"],
+  .stButton button {
+    padding: 0.9rem 1.2rem;
+    font-size: 1.02rem;
+  }
+}
+
+/* 讓圖片像 st.map：圓角、陰影、邊框、裁切溢出 */
+.photo-like-map {
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  border: 1px solid rgba(0,0,0,.08);
+  overflow: hidden;           /* 防止圖片方塊外溢 */
+  background: #fff;
+}
+
+/* 可選：在上方加一條微妙的工具列背景（純視覺） */
+.photo-like-map__toolbar {
+  height: 36px;
+  background: linear-gradient(180deg, rgba(0,0,0,.04), rgba(0,0,0,.02));
+  border-bottom: 1px solid rgba(0,0,0,.06);
+}

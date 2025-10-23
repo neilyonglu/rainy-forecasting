@@ -1,0 +1,4 @@
+﻿dataset,obsTime,imageUrl,desc,localPath
+O-A0084-001,2025-10-23T14:42:00+08:00,https://cwaopendata.s3.ap-northeast-1.amazonaws.com/Observation/O-A0084-001.png,單雷達合成回波圖-樹林_無地形,radar_png\O-A0084-001.png
+O-A0084-002,2025-10-23T14:44:00+08:00,https://cwaopendata.s3.ap-northeast-1.amazonaws.com/Observation/O-A0084-002.png,單雷達合成回波圖-南屯_無地形,radar_png\O-A0084-002.png
+O-A0084-003,2025-10-23T14:43:00+08:00,https://cwaopendata.s3.ap-northeast-1.amazonaws.com/Observation/O-A0084-003.png,單雷達合成回波圖-林園_無地形,radar_png\O-A0084-003.png
