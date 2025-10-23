@@ -1,0 +1,30 @@
+fileapi:
+  api_key: ""
+  base_url: "https://opendata.cwa.gov.tw/fileapi/v1/opendataapi"
+  datasets:
+    - id: "O-A0084-001"
+      name: "樹林"
+      lat: 25.00395201092895
+      lon: 121.4007087696093
+    - id: "O-A0084-002"
+      name: "南屯"
+      lat: 24.144104888041277
+      lon: 120.57940762356003
+    - id: "O-A0084-003"
+      name: "林園"
+      lat: 22.52630020546718
+      lon: 120.37942783886149
+  timeout: 20
+  save_csv: true
+  csv_path: "current_radar_links.csv"
+  download_images: true
+  image_dir: "radar_png"
+
+historyapi:
+  api_key: ""
+  dataset: "O-A0059-001"  # 合成雷達回波（格點 dBZ）
+  timeout: 30
+  # 這是「時間清單」端點（回含多個 time[] + ProductURL 的 JSON）
+  index_url: "https://opendata.cwa.gov.tw/historyapi/v1/getMetadata/O-A0059-001?Authorization=CWA-C2C88B98-EDB2-4E52-9AC8-FB26A8BC714B&format=JSON"
+  limit: 1                # 先抓幾筆測試
+  out_dir: "radar_grids"  # 解析後輸出（parquet 或 npy）
