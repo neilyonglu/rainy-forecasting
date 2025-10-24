@@ -1,14 +1,10 @@
+import streamlit as st
 import googlemaps
-import yaml
 
-def load_google_client(config_path="./api_keys.yaml"):
-    with open(config_path, "r", encoding="utf-8") as f:
-        cfg = yaml.safe_load(f)
-    return googlemaps.Client(key=cfg["google"]["geocoding_api_key"])
 
-gmaps = load_google_client()
+gmaps = googlemaps.Client(key=st.secrets["GEO_API_KEY"])
 
-def geocode_and_rain(address: str) -> tuple:
+def geocode_and_name(address: str) -> tuple:
     """
     ### 地址轉經緯度
     #### para:

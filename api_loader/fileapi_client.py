@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import Dict, Any, List, Tuple
 import requests
 import pandas as pd
+import streamlit as st
 
 FILEAPI_BASE = "https://opendata.cwa.gov.tw/fileapi/v1/opendataapi"
 
@@ -47,7 +48,7 @@ def download_image(url: str, out_dir: Path, filename: str | None = None, timeout
 def run_fileapi(cfg: Dict[str, Any], debug: bool = False) -> None:
     c = cfg["fileapi"]
     base_url = c.get("base_url", "https://opendata.cwa.gov.tw/fileapi/v1/opendataapi")
-    api_key = c["api_key"]
+    api_key = st.secrets["CWA_API_KEY"]
     timeout = int(c.get("timeout", 20))
     datasets: List[str] = [
         ds["id"] if isinstance(ds, dict) else ds
