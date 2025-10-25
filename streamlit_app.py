@@ -1,11 +1,10 @@
 import streamlit as st
-import streamlit.components.v1 as components
 import pandas as pd
 from datetime import datetime
 
-from check_rain import check_rain
-from locate.google_api import geocode_and_name
-from utils.zoom_viewr import show_zoomable_photo_like_map
+from locate.google_maps_client import geocode_and_name
+from utils.UI_view import render_rain_view
+from utils.geo_session import ensure_location
 
 # Page config
 st.set_page_config(page_title="Rainy Forecasting", page_icon="🌧️", layout="wide")
@@ -65,6 +64,12 @@ def show_result_card(data: dict):
 if mode == 0:  # Home
     st.header(PAGES[mode])
 
+    loc = ensure_location(accuracy_threshold_m=50)
+    if loc:
+        lat, lon, acc = loc
+        label = f"目前位置（±{acc:.0f} m）" if acc is not None else "目前位置"
+        render_rain_view(lat, lon, place_label=label)
+
 
 elif mode == 1:  # Address lookup
     st.header(PAGES[mode])
@@ -72,49 +77,9 @@ elif mode == 1:  # Address lookup
     with st.form("form_addr"):
         address = st.text_input("地址 / 地名", placeholder="例如: 台北101、安平古堡")
         submitted = st.form_submit_button("查詢雨勢", type="primary")
-
-    if submitted:
-        with st.spinner("地理編碼中..."):
-            try:
-                name, lat, lon = geocode_and_name(address)  # ← 你的函式，回傳 tuple
-            except ValueError as e:
-                st.warning("找不到此位置。換個關鍵詞試試？")
-                st.error(f"Geocoding 失敗：{e}")
-                name = lat = lon = None
-
-        if name is not None:
-            st.success(name)  # show address name
-
-            with st.spinner("查詢雨勢中..."):
-                try:
-                    result = check_rain(lat, lon, return_image=True)
-                except Exception as e:
-                    st.error(f"check_rain 失敗：{e}")
-                    result  = None
-
-            if result:
-                # 顯示主要資訊
-                col1, col2 = st.columns(2)
-                col1.metric("", result['desc'])
-                col2.metric(
-                    "mm/hr",
-                    f"{result['rng'][0]}–{result['rng'][1]}"
-                    if result['rng'][1] is not None
-                    else f"{result['rng'][0]}+"
-                )
-
-                if result.get("image") is not None:
-                    show_zoomable_photo_like_map(
-                        result["image"],
-                        center_px=result["px"],
-                        center_py=result["py"],
-                        px_per_km=result["px_per_km"],
-                        init_km=25,
-                    )
-
-                # 顯示地圖標點
-                df_map = pd.DataFrame({"lat": [result["lat"]], "lon": [result["lon"]]})
-                st.map(df_map, zoom=9)
+    if submitted and address:
+        name, lat, lon = geocode_and_name(address)
+        render_rain_view(lat, lon, name)
 
 
 elif mode == 2:  # Route lookup

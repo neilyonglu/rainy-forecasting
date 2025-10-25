@@ -7,7 +7,7 @@ import numpy as np
 from PIL import Image
 
 from locate.location import latlon_to_pixel as _latlon_to_pixel
-from utils.plot_tool import render_preview_pil as _render_preview_pil
+from utils.plot_utils import render_preview_pil as _render_preview_pil
 from utils.select_radar import select_best_radar as _select_best_radar
 
 def _dbz_to_rain_intensity(dbz: int):
@@ -113,8 +113,8 @@ def check_rain(
         "best_id": best_id,
         "radar_name": radar_info.get("name", best_id),
         "desc": desc,
-        "rng": rng,               # (min, max); max=None 表示以上
-        "image": preview,         # PIL.Image 或 None
+        "rng": rng,                 # (min, max); max=None 表示以上
+        "image": preview,           # PIL.Image 或 None
         "px": int(px),
         "py": int(py),
         "px_per_km": 11.97,         # 你的比例
