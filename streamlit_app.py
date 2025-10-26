@@ -62,8 +62,8 @@ def show_result_card(data: dict):
 
 # ---- 啟動時進行 CWA → HF 的 2 分鐘新鮮度檢查 ----
 with st.spinner("同步最新雷達圖（如需）…"):
-    cfg = load_config("config.yaml")
-    sync_info = ensure_latest_to_hf_streaming(cfg, max_age_minutes=10, debug=False)
+    cfg = load_config("/config.yaml")
+    sync_info = ensure_latest_to_hf_streaming(cfg, max_age_minutes=2, debug=False)
     if sync_info:
         if sync_info.get("need_update"):
             st.success(f"已更新HF：{sync_info['obs_time_utc']}")

@@ -8,7 +8,7 @@ def show_zoomable_photo_like_map(
     center_px,
     center_py,
     px_per_km: float,
-    init_km: int = 25,
+    init_km: int = 20,
 ):
     """以 st.map 風格顯示圖片，可拖曳/縮放；初始視窗=±init_km。"""
     img_arr = np.array(img_pil)

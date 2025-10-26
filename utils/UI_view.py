@@ -32,7 +32,7 @@ def render_rain_view(lat: float, lon: float, place_label: str = "目前位置"):
             center_px=result["px"],
             center_py=result["py"],
             px_per_km=result["px_per_km"],
-            init_km=25,
+            init_km=20,
         )
 
     # 地圖定位點
