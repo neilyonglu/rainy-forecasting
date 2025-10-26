@@ -5,6 +5,8 @@ from typing import Dict, Any
 
 import numpy as np
 from PIL import Image
+from huggingface_hub import hf_hub_download
+import streamlit as st
 
 from locate.location import latlon_to_pixel as _latlon_to_pixel
 from utils.plot_utils import render_preview_pil as _render_preview_pil
@@ -70,11 +72,21 @@ def check_rain(
     best_id = _select_best_radar(lat, lon, datasets)
     radar_info = next((d for d in datasets if d["id"] == best_id), None)
 
-    # 2) 讀雷達 PNG
-    img_path = os.path.join(image_dir, f"{best_id}.png")
-    if not os.path.exists(img_path):
-        raise FileNotFoundError(f"找不到雷達圖：{img_path}")
-    img = Image.open(img_path).convert("RGB")
+    # 2) 從 HuggingFace Hub 讀雷達 PNG
+    repo_id = st.secrets["HF_REPO_ID"]
+    hf_token = st.secrets["HF_TOKEN"]
+
+    try:
+        img_path = hf_hub_download(
+            repo_id=repo_id,
+            filename=f"radar_new_png/{best_id}.png",
+            repo_type="dataset",
+            token=hf_token,
+            force_download=True,
+        )
+        img = Image.open(img_path).convert("RGB")
+    except Exception as e:
+        raise FileNotFoundError(f"❌ 從 Hugging Face Hub 下載圖檔失敗：{e}")
     
     # 3) 經緯度 → 像素
     radar_cfg = {
