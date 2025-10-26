@@ -46,7 +46,7 @@ mode = st.radio("", list(PAGES.keys()), index=0, format_func=lambda x: PAGES[x],
 
 
 # --- App 啟動：只做一次，同一個使用者 Session 之後不再動 ---
-with st.spinner("初始化：同步最新雷達圖（只在第一次載入）…"):
+with st.spinner("同步最新雷達圖…"):
     info = sync_hf_once()
     if info:
         if info.get("need_update"):
