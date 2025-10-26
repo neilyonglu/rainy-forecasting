@@ -76,7 +76,7 @@ def ensure_latest_to_hf_streaming(cfg: Dict[str, Any], max_age_minutes: int = 2,
     repo_id = st.secrets["HF_REPO_ID"]
     hf_token = st.secrets["HF_TOKEN"]
     api = HfApi(token=hf_token)
-    prefix = "CWA_dataset/radar_new_png"
+    prefix = "radar_new_png"
 
     # === 讀取 HF 既有 meta.json ===
     meta_url = hf_hub_url(repo_id=repo_id, filename=f"{prefix}/meta.json", repo_type="dataset")
