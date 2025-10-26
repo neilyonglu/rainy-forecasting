@@ -3,8 +3,10 @@ import pandas as pd
 from datetime import datetime
 
 from locate.google_maps_client import geocode_and_name
+from api_loader.fileapi_client import ensure_latest_to_hf_streaming
 from utils.UI_view import render_rain_view
 from utils.geo_session import ensure_location
+from utils.config_loader import load_config
 
 # Page config
 st.set_page_config(page_title="Rainy Forecasting", page_icon="🌧️", layout="wide")
@@ -56,6 +58,17 @@ def show_result_card(data: dict):
         # 地圖（以單點 DataFrame 呈現）
         df_map = pd.DataFrame({"lat": [data["lat"]], "lon": [data["lon"]]})
         st.map(df_map, zoom=8)
+
+
+# ---- 啟動時進行 CWA → HF 的 2 分鐘新鮮度檢查 ----
+with st.spinner("同步最新雷達圖（如需）…"):
+    cfg = load_config("config.yaml")
+    sync_info = ensure_latest_to_hf_streaming(cfg, max_age_minutes=10, debug=False)
+    if sync_info:
+        if sync_info.get("need_update"):
+            st.success(f"已更新HF：{sync_info['obs_time_utc']}")
+        else:
+            st.info(f"已是最新（obs={sync_info['obs_time_utc']}）")
 
 
 # =============================

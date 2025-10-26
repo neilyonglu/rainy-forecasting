@@ -18,7 +18,7 @@ fileapi:
   save_csv: true
   csv_path: "current_radar_links.csv"
   download_images: true
-  image_dir: "radar_png"
+  image_dir: ""
 
 historyapi:
   api_key: ""
