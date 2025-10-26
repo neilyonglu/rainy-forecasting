@@ -66,7 +66,6 @@ def check_rain(
         cfg = yaml.safe_load(f)
     
     datasets = cfg["fileapi"]["datasets"]
-    image_dir = cfg["fileapi"]["image_dir"]
 
     # 1) 找最近雷達
     best_id = _select_best_radar(lat, lon, datasets)
