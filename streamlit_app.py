@@ -8,6 +8,19 @@ from utils.UI_view import render_rain_view
 from utils.geo_session import ensure_location
 from utils.config_loader import load_config
 
+def sync_hf_once() -> dict | None:
+    # 已同步過就直接回傳上次資訊
+    if st.session_state.get("hf_synced_once"):
+        return st.session_state.get("hf_sync_info")
+
+    cfg = load_config("config.yaml")
+    info = ensure_latest_to_hf_streaming(cfg, max_age_minutes=10, debug=False)
+
+    # 記錄這次結果，整個 Session 期間不再重跑
+    st.session_state["hf_synced_once"] = True
+    st.session_state["hf_sync_info"] = info
+    return info
+
 # Page config
 st.set_page_config(page_title="Rainy Forecasting", page_icon="🌧️", layout="wide")
 st.title("🌧️ Rainy Forecasting")
@@ -31,44 +44,15 @@ PAGES = {
 }
 mode = st.radio("", list(PAGES.keys()), index=0, format_func=lambda x: PAGES[x], horizontal=True)
 
-# -----------------------------
-# Mock helpers (only UI demo)
-# -----------------------------
-def mock_rain_payload(lat=25.00395201092895, lon=121.4007087696093):
-    return {
-        "timestamp_utc": datetime.utcnow().isoformat(timespec="seconds"),
-        "lat": round(lat, 6),
-        "lon": round(lon, 6),
-        "nearest_radar": "樹林雷達",
-        "dbz": 33.0,
-        "rain_mmph": 8.5,
-        "level": "測試",
-    }
 
-# Simple reusable cards
-def show_result_card(data: dict):
-    with st.container(border=True):
-        st.markdown(f"**時間**：{data['timestamp_utc']}  ")
-        st.markdown(f"**座標**：{data['lat']}, {data['lon']}  ")
-        st.markdown(f"**最近雷達**：{data['nearest_radar']}  ")
-        col1, col2, col3 = st.columns(3)
-        col1.metric("dBZ", f"{data['dbz']:.1f}")
-        col2.metric("mm/hr", f"{data['rain_mmph']:.2f}")
-        col3.metric("分類", data['level'])
-        # 地圖（以單點 DataFrame 呈現）
-        df_map = pd.DataFrame({"lat": [data["lat"]], "lon": [data["lon"]]})
-        st.map(df_map, zoom=8)
-
-
-# ---- 啟動時進行 CWA → HF 的 2 分鐘新鮮度檢查 ----
-with st.spinner("同步最新雷達圖（如需）…"):
-    cfg = load_config("./config.yaml")
-    sync_info = ensure_latest_to_hf_streaming(cfg, max_age_minutes=2, debug=False)
-    if sync_info:
-        if sync_info.get("need_update"):
-            st.success(f"已更新HF：{sync_info['obs_time_utc']}")
+# --- App 啟動：只做一次，同一個使用者 Session 之後不再動 ---
+with st.spinner("初始化：同步最新雷達圖（只在第一次載入）…"):
+    info = sync_hf_once()
+    if info:
+        if info.get("need_update"):
+            st.success(f"已更新至 HF（obs={info['obs_time_utc']}）")
         else:
-            st.info(f"已是最新（obs={sync_info['obs_time_utc']}）")
+            st.info(f"HF 已是最新（obs={info['obs_time_utc']}，年齡 {info['age_minutes']} 分）")
 
 
 # =============================
@@ -97,22 +81,6 @@ elif mode == 1:  # Address lookup
 
 elif mode == 2:  # Route lookup
     st.header(PAGES[mode])
-    with st.form("form_route"):
-        col1, col2 = st.columns(2)
-        with col1:
-            origin = st.text_input("起點", value="台北車站")
-        with col2:
-            destination = st.text_input("終點", value="九份老街")
-        sample_n = st.slider("沿路取樣點數", 3, 30, 8)
-        travel_mode = st.selectbox("模式", ["driving", "transit", "walking", "bicycling"], index=0)
-        submitted = st.form_submit_button("規劃 → 預覽 UI", type="primary")
-    if submitted:
-        st.success(f"示意：從 {origin} → {destination}（{travel_mode}，取樣 {sample_n} 點）")
-        # 產生假資料卡片
-        for i in range(sample_n):
-            lat = 25.03 - i * 0.01
-            lon = 121.56 + i * 0.01
-            show_result_card(mock_rain_payload(lat, lon))
 
 
 elif mode == 3:  # Settings
