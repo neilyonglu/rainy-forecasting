@@ -14,7 +14,7 @@ def sync_hf_once() -> dict | None:
         return st.session_state.get("hf_sync_info")
 
     cfg = load_config("config.yaml")
-    info = ensure_latest_to_hf_streaming(cfg, max_age_minutes=10, debug=False)
+    info = ensure_latest_to_hf_streaming(cfg, max_age_minutes=2, debug=False)
 
     # 記錄這次結果，整個 Session 期間不再重跑
     st.session_state["hf_synced_once"] = True
@@ -52,7 +52,7 @@ with st.spinner("初始化：同步最新雷達圖（只在第一次載入）…
         if info.get("need_update"):
             st.success(f"已更新至 HF（obs={info['obs_time_utc']}）")
         else:
-            st.info(f"HF 已是最新（obs={info['obs_time_utc']}，年齡 {info['age_minutes']} 分）")
+            st.info(f"HF 已是最新（obs={info['obs_time_utc']}，{info['age_minutes']} 分鐘前資料）")
 
 
 # =============================
