@@ -7,3 +7,4 @@ requests>=2.32
 pyproj>=3.6.1
 googlemaps>=4.10.0
 streamlit-geolocation
+huggingface_hub
